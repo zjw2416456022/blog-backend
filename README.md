@@ -1,5 +1,98 @@
 # 博客系统后端 API
 
+## 项目简介
+这是一个基于Go语言和Gin框架开发的博客系统后端API，提供用户认证、文章管理和评论功能。
+
+## 技术栈
+- Go 1.24.0
+- Gin Web框架
+- GORM ORM框架
+- SQLite数据库
+- JWT认证
+
+## 功能特性
+- 用户注册和登录
+- JWT认证保护API
+- 文章CRUD操作
+- 评论功能
+- CORS跨域支持
+- 健康检查接口
+
+## 测试用例
+项目包含完整的单元测试，测试文件位于`tests/api_test.go`。测试覆盖以下功能：
+
+### 已实现的测试用例
+1. **用户注册测试** (`TestRegister`)：验证用户注册功能是否正常工作
+2. **用户登录测试** (`TestLogin`)：验证用户登录功能和JWT令牌生成
+3. **文章创建测试** (`TestCreatePost`)：验证创建文章功能
+4. **文章列表获取测试** (`TestGetPosts`)：验证获取文章列表功能
+5. **评论创建测试** (`TestCreateComment`)：验证创建评论功能
+6. **文章更新测试** (`TestUpdatePost`)：验证更新文章功能
+7. **文章删除测试** (`TestDeletePost`)：验证删除文章功能
+
+### 测试结果
+
+#### 单元测试结果
+所有测试用例均已成功通过：
+
+```
+=== RUN   TestRegister
+--- PASS: TestRegister (0.13s)
+=== RUN   TestLogin
+--- PASS: TestLogin (0.12s)
+=== RUN   TestCreatePost
+--- PASS: TestCreatePost (0.13s)
+=== RUN   TestGetPosts
+--- PASS: TestGetPosts (0.13s)
+=== RUN   TestCreateComment
+--- PASS: TestCreateComment (0.13s)
+=== RUN   TestUpdatePost
+--- PASS: TestUpdatePost (0.14s)
+=== RUN   TestDeletePost
+--- PASS: TestDeletePost (0.13s)
+PASS
+ok      blog-backend/tests      1.426s
+```
+
+#### 手动API测试结果
+通过手动测试，确认以下功能正常工作：
+
+- ✅ 服务器启动成功，监听在8000端口
+- ✅ 健康检查接口：`GET /health` 返回状态正常
+- ✅ 用户注册：`POST /api/v1/auth/register` 成功创建用户
+- ✅ 用户登录：`POST /api/v1/auth/login` 成功返回JWT令牌
+- ✅ 创建文章：`POST /api/v1/posts/` 成功创建文章
+- ✅ 获取文章列表：`GET /api/v1/posts` 成功返回文章列表
+
+## API接口说明
+
+### 用户相关接口
+- `POST /api/v1/auth/register` - 用户注册
+- `POST /api/v1/auth/login` - 用户登录
+- `GET /api/v1/user/profile` - 获取用户信息（需要认证）
+
+### 文章相关接口
+- `GET /api/v1/posts` - 获取文章列表
+- `GET /api/v1/posts/:id` - 获取文章详情
+- `POST /api/v1/posts/` - 创建文章（需要认证）
+- `PUT /api/v1/posts/:id` - 更新文章（需要认证）
+- `DELETE /api/v1/posts/:id` - 删除文章（需要认证）
+
+### 评论相关接口
+- `GET /api/v1/posts/:id/comments` - 获取文章评论
+- `POST /api/v1/posts/:id/comments` - 创建评论（需要认证）
+- `DELETE /api/v1/comments/:commentId` - 删除评论（需要认证）
+
+### 健康检查接口
+- `GET /health` - 健康检查
+
+## 运行测试
+要运行测试，执行以下命令：
+```bash
+cd /Volumes/F/project/go/blog-backend
+go test ./tests/... -v
+```
+
 这是一个使用 Go 语言、Gin 框架和 GORM 开发的个人博客系统后端服务。实现了用户认证、文章管理和评论功能的 RESTful API。
 
 ## 技术栈
