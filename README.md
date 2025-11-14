@@ -4,7 +4,7 @@
 这是一个基于Go语言和Gin框架开发的博客系统后端API，提供用户认证、文章管理和评论功能。
 
 ## 技术栈
-- Go 1.24.0
+- Go 1.23.0
 - Gin Web框架
 - GORM ORM框架
 - SQLite数据库
@@ -26,9 +26,11 @@
 2. **用户登录测试** (`TestLogin`)：验证用户登录功能和JWT令牌生成
 3. **文章创建测试** (`TestCreatePost`)：验证创建文章功能
 4. **文章列表获取测试** (`TestGetPosts`)：验证获取文章列表功能
-5. **评论创建测试** (`TestCreateComment`)：验证创建评论功能
-6. **文章更新测试** (`TestUpdatePost`)：验证更新文章功能
-7. **文章删除测试** (`TestDeletePost`)：验证删除文章功能
+5. **文章更新测试** (`TestUpdatePost`)：验证更新文章功能
+6. **文章删除测试** (`TestDeletePost`)：验证删除文章功能
+7. **评论创建测试** (`TestCreateComment`)：验证创建评论功能
+8. **评论更新测试** (`TestUpdateComment`)：验证更新评论功能
+9. **评论删除测试** (`TestDeleteComment`)：验证删除评论功能
 
 ### 测试结果
 
@@ -50,8 +52,12 @@
 --- PASS: TestUpdatePost (0.14s)
 === RUN   TestDeletePost
 --- PASS: TestDeletePost (0.13s)
+=== RUN   TestUpdateComment
+--- PASS: TestUpdateComment (0.15s)
+=== RUN   TestDeleteComment
+--- PASS: TestDeleteComment (0.14s)
 PASS
-ok      blog-backend/tests      1.426s
+ok      blog-backend/tests      1.706s
 ```
 
 #### 手动API测试结果
@@ -63,6 +69,11 @@ ok      blog-backend/tests      1.426s
 - ✅ 用户登录：`POST /api/v1/auth/login` 成功返回JWT令牌
 - ✅ 创建文章：`POST /api/v1/posts/` 成功创建文章
 - ✅ 获取文章列表：`GET /api/v1/posts` 成功返回文章列表
+- ✅ 更新文章：`PUT /api/v1/posts/:id` 成功更新文章
+- ✅ 删除文章：`DELETE /api/v1/posts/:id` 成功删除文章
+- ✅ 创建评论：`POST /api/v1/posts/:postId/comments` 成功创建评论
+- ✅ 更新评论：`PUT /api/v1/comments/:commentId` 成功更新评论
+- ✅ 删除评论：`DELETE /api/v1/comments/:commentId` 成功删除评论
 
 ## API接口说明
 
@@ -97,7 +108,7 @@ go test ./tests/... -v
 
 ## 技术栈
 
-- **编程语言**: Go 1.23+
+- **编程语言**: Go 1.23.0
 - **Web 框架**: Gin
 - **ORM**: GORM
 - **数据库**: SQLite（支持切换到 MySQL/PostgreSQL）
@@ -135,33 +146,47 @@ go test ./tests/... -v
 
 ```
 blog-backend/
+├── api/            # API路由定义
+│   ├── comment_routes.go # 评论相关路由
+│   ├── post_routes.go    # 文章相关路由
+│   ├── routes.go         # 路由配置
+│   └── user_routes.go    # 用户相关路由
+├── cmd/            # 命令行入口
+│   └── main.go     # 应用入口
 ├── config/         # 配置文件
 │   ├── db.go       # 数据库配置
 │   └── jwt.go      # JWT 配置
+├── controller/     # 控制器层
+│   ├── comments.go # 评论控制器
+│   ├── posts.go    # 文章控制器
+│   └── users.go    # 用户控制器
 ├── middleware/     # 中间件
 │   └── auth.go     # JWT 认证中间件
 ├── models/         # 数据模型
 │   └── models.go   # 数据库模型定义
-├── routes/         # 路由处理
-│   ├── comments.go # 评论相关路由
-│   ├── posts.go    # 文章相关路由
-│   └── users.go    # 用户相关路由
+├── services/       # 服务层
+│   ├── comment_service.go # 评论服务
+│   ├── post_service.go    # 文章服务
+│   └── user_service.go    # 用户服务
 ├── utils/          # 工具函数
 │   ├── logger.go   # 日志工具
 │   └── response.go # 响应格式化工具
+├── tests/          # 测试文件
+│   ├── api_test.go # API测试
+│   └── logs/       # 测试日志目录
 ├── logs/           # 日志文件目录
-├── go.mod          # Go 模块文件
-├── go.sum          # 依赖版本锁定文件
-├── main.go         # 应用入口
+├── .gitignore      # Git忽略文件
+├── README.md       # 项目说明文档
 ├── blog.db         # SQLite 数据库文件
-└── README.md       # 项目说明文档
+├── go.mod          # Go 模块文件
+└── go.sum          # 依赖版本锁定文件
 ```
 
 ## 快速开始
 
 ### 环境要求
 
-- Go 1.23 或更高版本
+- Go 1.23.0
 - Git
 
 ### 安装步骤
@@ -195,7 +220,7 @@ func GetJWTConfig() JWTConfig {
 4. **运行项目**
 
 ```bash
-go run main.go
+go run ./cmd/main.go
 ```
 
 服务将在 `http://localhost:8000` 启动。
@@ -577,6 +602,9 @@ Authorization: Bearer <token>
 启动服务器后，可以使用 curl 命令测试接口：
 
 ```bash
+# 启动服务器
+go run ./cmd/main.go
+
 # 健康检查
 curl http://localhost:8000/health
 
@@ -596,7 +624,7 @@ curl -X POST http://localhost:8000/api/v1/auth/login \
 ### 编译二进制文件
 
 ```bash
-go build -o blog-backend main.go
+go build -o blog-backend ./cmd/main.go
 ```
 
 ### 运行二进制文件
